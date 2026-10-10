@@ -4,6 +4,7 @@ import {
   Image as ImageIcon, Info, Link2, MapPin, Menu, Minus, Plus, ShieldCheck,
   Smartphone, Users, WalletCards, X, Zap,
 } from 'lucide-react';
+import { ROUTES, ROUTE_FOR_STATE, TRANSITIONS } from './flow/flow';
 
 type Screen = 'home' | 'hostel' | 'room' | 'login' | 'terms' | 'queue' | 'claim' | 'plan' | 'parent' | 'pay' | 'pending' | 'failed' | 'timeout' | 'taken' | 'reservations' | 'revoked';
 type Gender = 'Male' | 'Female';
@@ -98,6 +99,44 @@ function HostelPage({ onNavigate }: { onNavigate: (screen: Screen) => void }) { 
 function RoomTypeCard({ type, onNavigate }: { type: { name: string; price: number; available: number; total: number; tone: string }; onNavigate: (screen: Screen) => void }) { return <article className={`room-card ${type.tone === 'booked' ? 'disabled-card' : ''}`}><div className="room-dots">{Array.from({ length: Number(type.name[0]) }).map((_, i) => <i key={i} />)}</div><StatusBadge status={type.tone === 'available' ? 'Available' : type.tone === 'reserved' ? 'Reserved' : 'Booked'} tone={type.tone} /><h3>{type.name}</h3><strong>{formatNaira(type.price)}</strong><span className="per">per bed space</span><div className="availability"><span>Available rooms</span><b>{type.available} / {type.total}</b></div><div className="progress"><i style={{ width: `${(type.available / type.total) * 100}%` }} /></div><button className="btn primary full" disabled={type.available === 0} onClick={() => onNavigate('room')}>{type.available ? 'Select room type' : 'Fully booked'}</button></article>; }
 
 function RoomPage({ onNavigate }: { onNavigate: (screen: Screen) => void }) { return <main className="section inner"><Breadcrumb current="2-man room" /><div className="room-page-heading"><div className="title-line"><h1>2-man room</h1><GenderBadge gender="Male" /><StatusBadge status="Reserved · 5 / 20 rooms available" tone="reserved" /></div><p>Emerald · 450 m from academic area</p></div><div className="room-detail-grid"><div><div className="gallery-main"><img src={photos.campus} alt="Two-man room" /><button><ChevronLeft /></button><button><ArrowRight /></button><span><ImageIcon size={14} /> Photo of a 2-man room in Emerald</span></div><div className="gallery-thumbs">{[photos.campus, photos.blue, photos.residence, photos.hero].map((photo, index) => <img key={photo} className={index === 0 ? 'selected' : ''} src={photo} alt="Room detail" />)}</div></div><div className="preferences"><h2>Choose your preferences</h2><Field label="Room floor" value="1st floor" /><Field label="Hostel wing" value="Wing A" /><Field label="Room number" value="Room 204" /><div className="field"><label>Number of reservations (friends / siblings)</label><div className="stepper"><button><Minus size={14} /></button><b>1</b><button><Plus size={14} /></button><small>Up to 2 in a 2-man room</small></div></div><div className="price-line"><span>Price per bed space</span><b>{formatNaira(900000)}</b></div><div className="price-line total"><span>Total</span><b>{formatNaira(900000)}</b></div><button className="btn primary full" onClick={() => onNavigate('login')}>Reserve room</button><p className="fineprint">Both options join the room's queue. When it is your turn you get an exclusive 10-minute checkout window.</p></div></div></main>; }
+function RoomPage({ onNavigate }: { onNavigate: (screen: Screen) => void }) {
+  return <main className="section inner">
+    <Breadcrumb current="2-man room" />
+    <div className="room-page-heading">
+      <div className="title-line">
+        <h1>2-man room</h1>
+        <GenderBadge gender="Male" />
+        <StatusBadge status="Reserved · 5 / 20 rooms available" tone="reserved" />
+      </div>
+      <p>Emerald · 450 m from academic area</p>
+    </div>
+    <div className="room-detail-grid">
+      <div>
+        <div className="gallery-main">
+          <img src={photos.campus} alt="Two-man room" />
+          <button><ChevronLeft /></button>
+          <button><ArrowRight /></button>
+          <span><ImageIcon size={14} /> Photo of a 2-man room in Emerald</span>
+        </div>
+        <div className="gallery-thumbs">{[photos.campus, photos.blue, photos.residence, photos.hero].map((photo, index) => <img key={photo} className={index === 0 ? 'selected' : ''} src={photo} alt="Room detail" />)}</div>
+      </div>
+      <div className="preferences">
+        <h2>Choose your preferences</h2>
+        <Field label="Room floor" value="1st floor" />
+        <Field label="Hostel wing" value="Wing A" />
+        <div className="field">
+          <label>Room assignment</label>
+          <div className="select-field">Room will be assigned when it is your turn<Info size={14} /></div>
+        </div>
+        <div className="field"><label>Number of reservations (friends / siblings)</label><div className="stepper"><button><Minus size={14} /></button><b>1</b><button><Plus size={14} /></button><small>Up to 2 in a 2-man room</small></div></div>
+        <div className="price-line"><span>Price per bed space</span><b>{formatNaira(900000)}</b></div>
+        <div className="price-line total"><span>Total</span><b>{formatNaira(900000)}</b></div>
+        <button className="btn primary full" onClick={() => onNavigate('login')}>Reserve room</button>
+        <p className="fineprint">Both options join the room's queue. When it is your turn you get an exclusive 10-minute checkout window.</p>
+      </div>
+    </div>
+  </main>;
+}
 function Field({ label, value }: { label: string; value: string }) { return <div className="field"><label>{label}</label><div className="select-field">{value}<ChevronDown size={14} /></div></div>; }
 
 function LoginPage({ onNavigate }: { onNavigate: (screen: Screen) => void }) { return <main className="section inner auth-page"><StepBar current={2} /><div className="selection-strip"><span>Your selection</span><b>2-Man Room · Emerald · 1st floor · Wing A · Room 204 · 1 reservation</b><button>Change</button></div><div className="auth-grid"><AuthCard title="Log in" subtitle="Already have an account? Log in to continue."><FieldInput label="Email" placeholder="you@example.com" /><FieldInput label="Password" placeholder="Enter your password" /><button className="btn primary full" onClick={() => onNavigate('terms')}>Log in</button><a>Forgot password?</a><p className="helper">After logging in you will review the hostel terms, then join the queue for your room.</p></AuthCard><AuthCard title="Create an account" subtitle="New here? Fill in your details so we can match you to the right hostel."><div className="two-fields"><FieldInput label="First name" placeholder="Ada" /><FieldInput label="Last name" placeholder="Okafor" /><FieldInput label="Matric number" placeholder="21/0012" /><FieldInput label="Phone number" placeholder="0800 000 0000" /></div><FieldInput label="School email" placeholder="you@pau.edu.ng" /><label className="input-label">Gender <small>(used to assign a male or female hostel)</small></label><div className="radio-row"><label><input type="radio" name="gender" /> Male</label><label><input type="radio" name="gender" /> Female</label></div><div className="two-fields"><FieldInput label="Password" placeholder="Create a password" /><FieldInput label="Confirm password" placeholder="Repeat password" /></div><button className="btn primary full" onClick={() => onNavigate('terms')}>Create account</button></AuthCard></div></main>; }
